@@ -41,5 +41,56 @@ export const adminProcedure = t.procedure.use(
         user: ctx.user,
       },
     });
-  }),
+  })
+);
+
+/**
+ * Procedure for organization admins
+ * Allows ORG_ADMIN and ADMIN roles
+ */
+export const orgAdminProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+
+    if (ctx.user.role !== 'ORG_ADMIN' && ctx.user.role !== 'ADMIN') {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Organization admin access required" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  })
+);
+
+/**
+ * Procedure for consultants
+ * Allows CONSULTANT, ORG_ADMIN and ADMIN roles
+ */
+export const consultantProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+
+    const allowedRoles = ['CONSULTANT', 'ORG_ADMIN', 'ADMIN'];
+    if (!allowedRoles.includes(ctx.user.role)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Consultant access required" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  })
 );

@@ -10,46 +10,46 @@
 - [x] Exécuter la migration initiale (pnpm db:push)
 
 ### Helpers de base de données
-- [ ] Créer les fonctions CRUD pour organizations
-- [ ] Créer les fonctions CRUD pour bilans
-- [ ] Créer les fonctions CRUD pour sessions
-- [ ] Créer les fonctions CRUD pour recommendations
-- [ ] Créer les fonctions CRUD pour documents
-- [ ] Créer les fonctions CRUD pour messages
+- [x] Créer les fonctions CRUD pour organizations
+- [x] Créer les fonctions CRUD pour bilans
+- [x] Créer les fonctions CRUD pour sessions
+- [x] Créer les fonctions CRUD pour recommendations
+- [x] Créer les fonctions CRUD pour documents
+- [x] Créer les fonctions CRUD pour messages
 
 ## Phase 2: Développement du système d'authentification et des rôles
 
 ### Système de rôles
-- [ ] Étendre le schéma users avec les 4 rôles (BENEFICIARY, CONSULTANT, ORG_ADMIN, ADMIN)
-- [ ] Créer adminProcedure pour les opérations admin
-- [ ] Créer orgAdminProcedure pour les opérations org_admin
-- [ ] Créer consultantProcedure pour les opérations consultant
-- [ ] Implémenter la vérification des rôles dans les procédures
+- [x] Étendre le schéma users avec les 4 rôles (BENEFICIARY, CONSULTANT, ORG_ADMIN, ADMIN)
+- [x] Créer adminProcedure pour les opérations admin
+- [x] Créer orgAdminProcedure pour les opérations org_admin
+- [x] Créer consultantProcedure pour les opérations consultant
+- [x] Implémenter la vérification des rôles dans les procédures
 
 ### Gestion des utilisateurs
-- [ ] Procédure pour lister les utilisateurs (avec filtres par rôle)
-- [ ] Procédure pour inviter un consultant
-- [ ] Procédure pour affecter un consultant à un bilan
-- [ ] Procédure pour mettre à jour le profil utilisateur
-- [ ] Procédure pour désactiver un utilisateur
+- [x] Procédure pour lister les utilisateurs (avec filtres par rôle)
+- [x] Procédure pour inviter un consultant
+- [x] Procédure pour affecter un consultant à un bilan
+- [x] Procédure pour mettre à jour le profil utilisateur
+- [x] Procédure pour désactiver un utilisateur
 
 ## Phase 3: Création des procédures tRPC pour la gestion des bilans
 
 ### CRUD Bilans
-- [ ] Procédure pour créer un nouveau bilan
-- [ ] Procédure pour lister les bilans (avec filtres par statut, bénéficiaire, consultant)
-- [ ] Procédure pour obtenir les détails d'un bilan
-- [ ] Procédure pour mettre à jour un bilan
-- [ ] Procédure pour changer le statut d'un bilan (workflow 3 phases)
-- [ ] Procédure pour archiver un bilan
-- [ ] Procédure pour supprimer un bilan
+- [x] Procédure pour créer un nouveau bilan
+- [x] Procédure pour lister les bilans (avec filtres par statut, bénéficiaire, consultant)
+- [x] Procédure pour obtenir les détails d'un bilan
+- [x] Procédure pour mettre à jour un bilan
+- [x] Procédure pour changer le statut d'un bilan (workflow 3 phases)
+- [x] Procédure pour archiver un bilan
+- [x] Procédure pour supprimer un bilan
 
 ### Gestion des sessions
-- [ ] Procédure pour créer une session
-- [ ] Procédure pour lister les sessions d'un bilan
-- [ ] Procédure pour mettre à jour une session
-- [ ] Procédure pour marquer une session comme complétée
-- [ ] Procédure pour annuler/reporter une session
+- [x] Procédure pour créer une session
+- [x] Procédure pour lister les sessions d'un bilan
+- [x] Procédure pour mettre à jour une session
+- [x] Procédure pour marquer une session comme complétée
+- [x] Procédure pour annuler/reporter une session
 
 ### Évaluation des compétences
 - [ ] Procédure pour sauvegarder l'auto-évaluation du bénéficiaire
