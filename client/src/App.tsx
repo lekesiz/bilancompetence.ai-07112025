@@ -15,7 +15,8 @@ import Recommendations from "./pages/Recommendations";
 import SkillsAssessment from "./pages/SkillsAssessment";
 import FranceTravail from "./pages/FranceTravail";
 import Qualiopi from "@/pages/Qualiopi";
-import ResourceLibrary from "@/pages/ResourceLibrary";
+import ResourceLibrary from "./pages/ResourceLibrary";
+import Calendar from "./pages/Calendar";
 import Messages from "./pages/Messages";
 import Documents from "./pages/Documents";
 
@@ -33,9 +34,8 @@ function Router() {
       <Route path={"/consultants"} component={Consultants} />
       <Route path={"/beneficiaries"} component={Beneficiaries} />
       <Route path={"/sessions"} component={Sessions} />
-       <Route path="/qualiopi" component={Qualiopi} />
-      <Route path="/resources" component={ResourceLibrary} />
-      <Route path={"/bilans/:id/messages"} component={Messages} />
+       <Route path="/qualiopi" component={Qualiopi} />      <Route path={"/resources"} component={ResourceLibrary} />
+      <Route path={"/calendar"} component={Calendar} />      <Route path={"/bilans/:id/messages"} component={Messages} />
       <Route path={"/bilans/:id/documents"} component={Documents} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
