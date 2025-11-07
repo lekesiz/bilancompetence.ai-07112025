@@ -24,10 +24,10 @@ interface AttestationData extends BilanData {
 /**
  * Convertir un stream en Buffer
  */
-function streamToBuffer(stream: Readable): Promise<Buffer> {
+function streamToBuffer(stream: Readable | typeof PDFDocument): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("data", (chunk: Buffer) => chunks.push(chunk));
     stream.on("end", () => resolve(Buffer.concat(chunks)));
     stream.on("error", reject);
   });

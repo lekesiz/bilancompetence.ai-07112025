@@ -73,7 +73,7 @@ export const messagesRouter = router({
     // Grouper par bilanId et garder le dernier message
     const conversationsMap = new Map<number, (typeof result)[0]>();
     result.forEach((message) => {
-      if (!conversationsMap.has(message.bilanId)) {
+      if (message.bilanId && !conversationsMap.has(message.bilanId)) {
         conversationsMap.set(message.bilanId, message);
       }
     });

@@ -33,7 +33,9 @@ export const pdfRouter = router({
 
       // Récupérer les utilisateurs
       const [beneficiary] = await db.select().from(users).where(eq(users.id, bilan.beneficiaryId));
-      const [consultant] = await db.select().from(users).where(eq(users.id, bilan.consultantId));
+      const [consultant] = bilan.consultantId 
+        ? await db.select().from(users).where(eq(users.id, bilan.consultantId))
+        : [null];
 
       // Données simulées pour la démonstration
       const pdfData = {
@@ -98,7 +100,9 @@ export const pdfRouter = router({
 
       // Récupérer les utilisateurs
       const [beneficiary] = await db.select().from(users).where(eq(users.id, bilan.beneficiaryId));
-      const [consultant] = await db.select().from(users).where(eq(users.id, bilan.consultantId));
+      const [consultant] = bilan.consultantId 
+        ? await db.select().from(users).where(eq(users.id, bilan.consultantId))
+        : [null];
 
       const pdfData = {
         id: bilan.id,
@@ -151,7 +155,9 @@ export const pdfRouter = router({
 
       // Récupérer les utilisateurs
       const [beneficiary] = await db.select().from(users).where(eq(users.id, bilan.beneficiaryId));
-      const [consultant] = await db.select().from(users).where(eq(users.id, bilan.consultantId));
+      const [consultant] = bilan.consultantId 
+        ? await db.select().from(users).where(eq(users.id, bilan.consultantId))
+        : [null];
 
       const pdfData = {
         sessionNumber: session.id, // Using session ID as number

@@ -13,7 +13,7 @@ export const documentsRouter = router({
     .input(
       z.object({
         bilanId: z.number(),
-        type: z.enum(["CV", "LETTRE_MOTIVATION", "SYNTHESE", "ATTESTATION", "AUTRE"]),
+        type: z.enum(["CV", "COVER_LETTER", "SYNTHESIS", "REPORT", "OTHER"]),
         name: z.string(),
         fileData: z.string(), // Base64 encoded file
         mimeType: z.string(),
@@ -38,8 +38,11 @@ export const documentsRouter = router({
         .values({
           bilanId: input.bilanId,
           type: input.type,
-          name: input.name,
-          url,
+          title: input.name,
+          fileName: input.name,
+          filePath: url,
+          fileSize: buffer.length,
+          mimeType: input.mimeType,
           uploadedBy: ctx.user.id,
         })
         .$returningId();
@@ -54,20 +57,16 @@ export const documentsRouter = router({
     .input(
       z.object({
         bilanId: z.number(),
-        type: z.enum(["CV", "LETTRE_MOTIVATION", "SYNTHESE", "ATTESTATION", "AUTRE"]).optional(),
+        type: z.enum(["CV", "COVER_LETTER", "SYNTHESIS", "REPORT", "OTHER"]).optional(),
       })
     )
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      let query = db.select().from(documents).where(eq(documents.bilanId, input.bilanId));
-
-      if (input.type) {
-        query = query.where(and(eq(documents.bilanId, input.bilanId), eq(documents.type, input.type)));
-      }
-
-      const result = await query;
+      const result = input.type
+        ? await db.select().from(documents).where(and(eq(documents.bilanId, input.bilanId), eq(documents.type, input.type)))
+        : await db.select().from(documents).where(eq(documents.bilanId, input.bilanId));
       return result;
     }),
 
@@ -125,7 +124,7 @@ export const documentsRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
-      await db.update(documents).set({ name: input.name }).where(eq(documents.id, input.id));
+      await db.update(documents).set({ fileName: input.name }).where(eq(documents.id, input.id));
 
       return { success: true };
     }),

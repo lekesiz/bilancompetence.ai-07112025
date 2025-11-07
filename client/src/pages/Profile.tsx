@@ -43,7 +43,7 @@ export default function Profile() {
   const handleSave = () => {
     updateProfileMutation.mutate({
       name: formData.name,
-      email: formData.email,
+      phone: formData.phone,
     });
   };
 

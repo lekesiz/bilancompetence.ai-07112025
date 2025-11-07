@@ -192,7 +192,7 @@ export default function Documents() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => window.open(doc.url, "_blank")}
+                          onClick={() => window.open(doc.filePath, "_blank")}
                         >
                           <ExternalLink className="h-4 w-4" />
                         </Button>

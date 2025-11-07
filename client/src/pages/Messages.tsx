@@ -74,6 +74,11 @@ export default function Messages() {
     const receiverId =
       user?.role === "BENEFICIARY" ? bilan.consultantId : bilan.beneficiaryId;
 
+    if (!receiverId) {
+      toast.error("Destinataire non trouvé");
+      return;
+    }
+
     sendMessageMutation.mutate({
       bilanId,
       receiverId,
