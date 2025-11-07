@@ -28,7 +28,7 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import OnboardingTutorial from "./OnboardingTutorial";
 
-import { FileText, Calendar, MessageSquare, Building2, UserCog, BarChart3, ClipboardList, User as UserIcon, BookOpen } from "lucide-react";
+import { FileText, Calendar, MessageSquare, Building2, UserCog, BarChart3, ClipboardList, User as UserIcon, BookOpen, TrendingUp } from "lucide-react";
 
 interface MenuItem {
   icon: any;
@@ -90,6 +90,12 @@ const menuItems: MenuItem[] = [
     icon: BarChart3,
     label: "Statistiques",
     path: "/statistics",
+    roles: ["ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: TrendingUp,
+    label: "Analytics",
+    path: "/analytics",
     roles: ["ORG_ADMIN", "ADMIN"],
   },
   {
