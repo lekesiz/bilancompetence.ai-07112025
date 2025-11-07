@@ -26,8 +26,9 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import OnboardingTutorial from "./OnboardingTutorial";
 
-import { FileText, Calendar, MessageSquare, Building2, UserCog, BarChart3, ClipboardList, User as UserIcon } from "lucide-react";
+import { FileText, Calendar, MessageSquare, Building2, UserCog, BarChart3, ClipboardList, User as UserIcon, BookOpen } from "lucide-react";
 
 interface MenuItem {
   icon: any;
@@ -98,6 +99,12 @@ const menuItems: MenuItem[] = [
     roles: ["BENEFICIARY", "CONSULTANT", "ORG_ADMIN"],
   },
   {
+    icon: BookOpen,
+    label: "Ressources",
+    path: "/resources",
+    roles: ["BENEFICIARY", "CONSULTANT", "ORG_ADMIN", "ADMIN"],
+  },
+  {
     icon: UserIcon,
     label: "Mon profil",
     path: "/profile",
@@ -119,7 +126,17 @@ export default function DashboardLayout({
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { loading, user } = useAuth();
+
+  useEffect(() => {
+    if (user && user.role) {
+      const hasSeenTutorial = localStorage.getItem(`onboarding-tutorial-seen-${user.role}`);
+      if (!hasSeenTutorial) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
@@ -165,7 +182,14 @@ export default function DashboardLayout({
   }
 
   return (
-    <SidebarProvider
+    <>
+      {showOnboarding && user && (
+        <OnboardingTutorial
+          role={user.role}
+          onComplete={() => setShowOnboarding(false)}
+        />
+      )}
+      <SidebarProvider
       style={
         {
           "--sidebar-width": `${sidebarWidth}px`,
@@ -176,6 +200,7 @@ export default function DashboardLayout({
         {children}
       </DashboardLayoutContent>
     </SidebarProvider>
+    </>
   );
 }
 

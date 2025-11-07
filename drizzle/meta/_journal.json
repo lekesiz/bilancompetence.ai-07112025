@@ -15,6 +15,13 @@
       "when": 1762519665311,
       "tag": "0001_wet_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1762526445643,
+      "tag": "0002_thin_gambit",
+      "breakpoints": true
     }
   ]
 }

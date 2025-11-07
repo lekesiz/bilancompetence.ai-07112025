@@ -205,6 +205,20 @@ export type InsertSurveyResponse = typeof surveyResponses.$inferInsert;
 // AUDIT LOGS
 // ============================================================================
 
+export const skillsEvaluations = mysqlTable("skillsEvaluations", {
+  id: int("id").autoincrement().primaryKey(),
+  bilanId: int("bilanId").notNull(),
+  skillName: varchar("skillName", { length: 255 }).notNull(),
+  category: varchar("category", { length: 100 }),
+  level: int("level").notNull(), // 1-5
+  frequency: mysqlEnum("frequency", ["RARE", "OCCASIONAL", "FREQUENT", "DAILY"]),
+  preference: mysqlEnum("preference", ["DISLIKE", "NEUTRAL", "LIKE", "LOVE"]),
+  notes: text("notes"),
+  validatedByConsultant: boolean("validatedByConsultant").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 export const auditLogs = mysqlTable("auditLogs", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId"),
