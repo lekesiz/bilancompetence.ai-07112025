@@ -3,6 +3,8 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import * as XLSX from 'xlsx';
+import { toast } from 'sonner';
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -15,6 +17,8 @@ import {
   Users,
   Star,
   MessageSquare,
+  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -179,15 +183,73 @@ export default function Qualiopi() {
     return acc;
   }, {} as Record<string, QualiopiIndicator[]>);
 
+  // Fonction d'export Excel
+  const exportToExcel = () => {
+    const data = indicators.map(ind => ({
+      'Numéro': ind.number,
+      'Titre': ind.title,
+      'Description': ind.description,
+      'Catégorie': CATEGORY_LABELS[ind.category],
+      'Statut': STATUS_CONFIG[ind.status].label,
+      'Priorité': ind.priority === 'high' ? 'Haute' : ind.priority === 'medium' ? 'Moyenne' : 'Basse'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Indicateurs Qualiopi');
+    
+    const fileName = `qualiopi-indicateurs-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    toast.success('Export Excel généré avec succès');
+  };
+
+  // Fonction d'export CSV
+  const exportToCSV = () => {
+    const data = indicators.map(ind => ({
+      'Numéro': ind.number,
+      'Titre': ind.title,
+      'Description': ind.description,
+      'Catégorie': CATEGORY_LABELS[ind.category],
+      'Statut': STATUS_CONFIG[ind.status].label,
+      'Priorité': ind.priority === 'high' ? 'Haute' : ind.priority === 'medium' ? 'Moyenne' : 'Basse'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `qualiopi-indicateurs-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Export CSV généré avec succès');
+  };
+
   if (!user) return null;
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Qualiopi</h1>
-          <p className="text-gray-600 mt-2">Suivi de la conformité et des indicateurs qualité</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Qualiopi</h1>
+            <p className="text-gray-600 mt-2">Suivi de la conformité et des indicateurs qualité</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={exportToExcel} variant="outline">
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exporter Excel
+            </Button>
+            <Button onClick={exportToCSV} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Exporter CSV
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
