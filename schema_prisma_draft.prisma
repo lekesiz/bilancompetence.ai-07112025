@@ -1,0 +1,315 @@
+// Schéma Prisma pour BilanCompetence.AI v2.0
+// Basé sur l'analyse de l'ancien projet
+// Date: 7 novembre 2025
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  BENEFICIARY  // Bénéficiaire du bilan
+  CONSULTANT   // Consultant en bilan de compétences
+  ORG_ADMIN    // Administrateur d'organisme
+  ADMIN        // Super administrateur plateforme
+}
+
+enum BilanStatus {
+  PRELIMINARY    // Phase préliminaire
+  INVESTIGATION  // Phase d'investigation
+  CONCLUSION     // Phase de conclusion
+  COMPLETED      // Terminé
+  ARCHIVED       // Archivé
+}
+
+enum SessionStatus {
+  SCHEDULED   // Planifiée
+  COMPLETED   // Réalisée
+  CANCELLED   // Annulée
+  RESCHEDULED // Reportée
+}
+
+enum DocumentType {
+  CV
+  COVER_LETTER
+  SYNTHESIS
+  REPORT
+  OTHER
+}
+
+enum RecommendationType {
+  JOB          // Métier recommandé
+  TRAINING     // Formation recommandée
+  SKILL        // Compétence à développer
+  CERTIFICATION // Certification suggérée
+}
+
+// ============================================================================
+// TABLES PRINCIPALES
+// ============================================================================
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  siret       String?  @unique
+  address     String?
+  phone       String?
+  email       String?
+  website     String?
+  logo_url    String?
+  settings    Json?    // Configuration personnalisée
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  bilans      Bilan[]
+
+  @@map("organizations")
+}
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  full_name         String
+  password_hash     String
+  role              UserRole  @default(BENEFICIARY)
+  organization_id   String?
+  phone             String?
+  avatar_url        String?
+  email_verified_at DateTime?
+  last_login_at     DateTime?
+  is_active         Boolean   @default(true)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  deleted_at        DateTime?
+
+  // Relations
+  organization           Organization?          @relation(fields: [organization_id], references: [id])
+  bilans_as_beneficiary  Bilan[]               @relation("BilanBeneficiary")
+  bilans_as_consultant   Bilan[]               @relation("BilanConsultant")
+  sessions_as_consultant Session[]             @relation("SessionConsultant")
+  sessions_as_beneficiary Session[]            @relation("SessionBeneficiary")
+  messages_sent          Message[]             @relation("MessageSender")
+  messages_received      Message[]             @relation("MessageReceiver")
+  audit_logs             AuditLog[]
+  auth_sessions          AuthSession[]
+
+  @@index([email])
+  @@index([organization_id])
+  @@index([role])
+  @@map("users")
+}
+
+model Bilan {
+  id                  String       @id @default(uuid())
+  beneficiary_id      String
+  consultant_id       String?
+  organization_id     String?
+  status              BilanStatus  @default(PRELIMINARY)
+  start_date          DateTime     @default(now())
+  expected_end_date   DateTime?
+  actual_end_date     DateTime?
+  duration_hours      Float?       // Durée totale en heures
+  objectives          String?      @db.Text
+  context             String?      @db.Text
+  assessment_data     Json?        // Données d'évaluation des compétences
+  synthesis_data      Json?        // Données de synthèse
+  action_plan         Json?        // Plan d'action
+  satisfaction_score  Int?         // Note de satisfaction (1-5)
+  created_at          DateTime     @default(now())
+  updated_at          DateTime     @updatedAt
+
+  // Relations
+  beneficiary         User                   @relation("BilanBeneficiary", fields: [beneficiary_id], references: [id])
+  consultant          User?                  @relation("BilanConsultant", fields: [consultant_id], references: [id])
+  organization        Organization?          @relation(fields: [organization_id], references: [id])
+  sessions            Session[]
+  recommendations     Recommendation[]
+  documents           Document[]
+  satisfaction_surveys SatisfactionSurvey[]
+
+  @@index([beneficiary_id])
+  @@index([consultant_id])
+  @@index([organization_id])
+  @@index([status])
+  @@map("bilans")
+}
+
+model Session {
+  id              String        @id @default(uuid())
+  bilan_id        String
+  consultant_id   String
+  beneficiary_id  String
+  title           String
+  description     String?       @db.Text
+  scheduled_at    DateTime
+  duration_minutes Int          @default(60)
+  status          SessionStatus @default(SCHEDULED)
+  notes           String?       @db.Text
+  location        String?       // Lieu (physique ou URL visio)
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  // Relations
+  bilan           Bilan         @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
+  consultant      User          @relation("SessionConsultant", fields: [consultant_id], references: [id])
+  beneficiary     User          @relation("SessionBeneficiary", fields: [beneficiary_id], references: [id])
+
+  @@index([bilan_id])
+  @@index([consultant_id])
+  @@index([beneficiary_id])
+  @@index([scheduled_at])
+  @@map("sessions")
+}
+
+model Recommendation {
+  id          String              @id @default(uuid())
+  bilan_id    String
+  type        RecommendationType
+  title       String
+  description String?             @db.Text
+  rome_code   String?             // Code ROME (France Travail)
+  match_score Float?              // Score de compatibilité (0-100)
+  priority    Int                 @default(1) // 1=haute, 2=moyenne, 3=basse
+  metadata    Json?               // Données additionnelles (salaire, localisation, etc.)
+  created_at  DateTime            @default(now())
+  updated_at  DateTime            @updatedAt
+
+  // Relations
+  bilan       Bilan               @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
+
+  @@index([bilan_id])
+  @@index([type])
+  @@map("recommendations")
+}
+
+model Document {
+  id          String       @id @default(uuid())
+  bilan_id    String
+  type        DocumentType
+  title       String
+  file_name   String
+  file_path   String       // Chemin Supabase Storage
+  file_size   Int          // Taille en bytes
+  mime_type   String
+  uploaded_by String?
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  // Relations
+  bilan       Bilan        @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
+
+  @@index([bilan_id])
+  @@map("documents")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  sender_id   String
+  receiver_id String
+  subject     String?
+  content     String   @db.Text
+  is_read     Boolean  @default(false)
+  read_at     DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  sender      User     @relation("MessageSender", fields: [sender_id], references: [id])
+  receiver    User     @relation("MessageReceiver", fields: [receiver_id], references: [id])
+
+  @@index([sender_id])
+  @@index([receiver_id])
+  @@index([is_read])
+  @@map("messages")
+}
+
+model SatisfactionSurvey {
+  id          String   @id @default(uuid())
+  bilan_id    String
+  questions   Json     // Liste des questions
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  bilan       Bilan              @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
+  responses   SurveyResponse[]
+
+  @@index([bilan_id])
+  @@map("satisfaction_surveys")
+}
+
+model SurveyResponse {
+  id          String   @id @default(uuid())
+  survey_id   String
+  answers     Json     // Réponses aux questions
+  comments    String?  @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  survey      SatisfactionSurvey @relation(fields: [survey_id], references: [id], onDelete: Cascade)
+
+  @@index([survey_id])
+  @@map("survey_responses")
+}
+
+// ============================================================================
+// TABLES SYSTÈME
+// ============================================================================
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  user_id     String?
+  action      String   // CREATE, UPDATE, DELETE, LOGIN, etc.
+  entity_type String   // users, bilans, etc.
+  entity_id   String
+  changes     Json?    // Détails des changements
+  ip_address  String?
+  user_agent  String?
+  created_at  DateTime @default(now())
+
+  // Relations
+  user        User?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+  @@map("audit_logs")
+}
+
+model AuthSession {
+  id            String   @id @default(uuid())
+  user_id       String
+  refresh_token String   @unique
+  is_active     Boolean  @default(true)
+  expires_at    DateTime
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([refresh_token])
+  @@map("auth_sessions")
+}
+
+// ============================================================================
+// NOTES
+// ============================================================================
+
+// Ce schéma est compatible avec Supabase PostgreSQL
+// Les politiques RLS (Row Level Security) seront configurées directement dans Supabase
+// Les champs Json permettent une flexibilité pour les données métier évolutives
+// Les index sont optimisés pour les requêtes fréquentes
