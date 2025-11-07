@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Streamdown } from 'streamdown';
+import { useEffect } from "react";
+import { useLocation } from "wouter";
 
 /**
  * All content in this page are only for example, replace with your own feature implementation
@@ -12,6 +14,14 @@ export default function Home() {
   // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
   let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Redirect to dashboard if authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, user, setLocation]);
 
   // If theme is switchable in App.tsx, we can implement theme toggling like this:
   // const { theme, toggleTheme } = useTheme();

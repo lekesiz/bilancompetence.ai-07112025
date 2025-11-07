@@ -27,9 +27,82 @@ import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+import { FileText, Calendar, MessageSquare, Building2, UserCog, BarChart3, ClipboardList, User as UserIcon } from "lucide-react";
+
+interface MenuItem {
+  icon: any;
+  label: string;
+  path: string;
+  roles: string[];
+}
+
+const menuItems: MenuItem[] = [
+  {
+    icon: LayoutDashboard,
+    label: "Tableau de bord",
+    path: "/dashboard",
+    roles: ["BENEFICIARY", "CONSULTANT", "ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: FileText,
+    label: "Mes bilans",
+    path: "/bilans",
+    roles: ["BENEFICIARY", "CONSULTANT"],
+  },
+  {
+    icon: ClipboardList,
+    label: "Tous les bilans",
+    path: "/bilans",
+    roles: ["ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: Calendar,
+    label: "Mes sessions",
+    path: "/sessions",
+    roles: ["BENEFICIARY", "CONSULTANT"],
+  },
+  {
+    icon: Calendar,
+    label: "Toutes les sessions",
+    path: "/sessions",
+    roles: ["ORG_ADMIN"],
+  },
+  {
+    icon: UserCog,
+    label: "Consultants",
+    path: "/consultants",
+    roles: ["ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: Users,
+    label: "Bénéficiaires",
+    path: "/beneficiaries",
+    roles: ["CONSULTANT", "ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: Building2,
+    label: "Organisations",
+    path: "/organizations",
+    roles: ["ADMIN"],
+  },
+  {
+    icon: BarChart3,
+    label: "Statistiques",
+    path: "/statistics",
+    roles: ["ORG_ADMIN", "ADMIN"],
+  },
+  {
+    icon: MessageSquare,
+    label: "Messages",
+    path: "/messages",
+    roles: ["BENEFICIARY", "CONSULTANT", "ORG_ADMIN"],
+  },
+  {
+    icon: UserIcon,
+    label: "Mon profil",
+    path: "/profile",
+    roles: ["BENEFICIARY", "CONSULTANT", "ORG_ADMIN", "ADMIN"],
+  },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -209,24 +282,26 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
-                const isActive = location === item.path;
-                return (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      onClick={() => setLocation(item.path)}
-                      tooltip={item.label}
-                      className={`h-10 transition-all font-normal`}
-                    >
-                      <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
-                      />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {menuItems
+                .filter(item => user && item.roles.includes(user.role))
+                .map(item => {
+                  const isActive = location === item.path;
+                  return (
+                    <SidebarMenuItem key={`${item.path}-${item.label}`}>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        onClick={() => setLocation(item.path)}
+                        tooltip={item.label}
+                        className={`h-10 transition-all font-normal`}
+                      >
+                        <item.icon
+                          className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                        />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
             </SidebarMenu>
           </SidebarContent>
 

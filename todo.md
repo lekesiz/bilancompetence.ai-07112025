@@ -59,34 +59,34 @@
 ## Phase 4: Développement de l'interface utilisateur (Dashboard et pages)
 
 ### Layout et navigation
-- [ ] Créer DashboardLayout avec sidebar
-- [ ] Configurer la navigation par rôle (menu différent selon BENEFICIARY/CONSULTANT/ORG_ADMIN/ADMIN)
-- [ ] Ajouter le profil utilisateur dans le header
-- [ ] Implémenter la déconnexion
+- [x] Créer DashboardLayout avec sidebar
+- [x] Configurer la navigation par rôle (menu différent selon BENEFICIARY/CONSULTANT/ORG_ADMIN/ADMIN)
+- [x] Ajouter le profil utilisateur dans le header
+- [x] Implémenter la déconnexion
 
 ### Pages Bénéficiaire
-- [ ] Page d'accueil bénéficiaire (mes bilans)
+- [x] Page d'accueil bénéficiaire (mes bilans)
 - [ ] Page détail d'un bilan
 - [ ] Page auto-évaluation des compétences
 - [ ] Page mes sessions
 - [ ] Page mes documents
 
 ### Pages Consultant
-- [ ] Page d'accueil consultant (bilans assignés)
+- [x] Page d'accueil consultant (bilans assignés)
 - [ ] Page détail bilan (vue consultant)
 - [ ] Page validation évaluation
 - [ ] Page planification sessions
 - [ ] Page recommandations IA
 
 ### Pages Org Admin
-- [ ] Dashboard organisation (statistiques)
+- [x] Dashboard organisation (statistiques)
 - [ ] Page gestion des consultants
 - [ ] Page gestion des bénéficiaires
-- [ ] Page tous les bilans
+- [x] Page tous les bilans
 - [ ] Page paramètres organisation
 
 ### Pages Admin
-- [ ] Dashboard admin (toutes les organisations)
+- [x] Dashboard admin (toutes les organisations)
 - [ ] Page gestion des organisations
 - [ ] Page gestion des utilisateurs
 - [ ] Page logs d'audit
