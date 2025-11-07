@@ -161,6 +161,7 @@ export type InsertDocument = typeof documents.$inferInsert;
 
 export const messages = mysqlTable("messages", {
   id: int("id").autoincrement().primaryKey(),
+  bilanId: int("bilanId"),
   senderId: int("senderId").notNull(),
   receiverId: int("receiverId").notNull(),
   subject: varchar("subject", { length: 255 }),

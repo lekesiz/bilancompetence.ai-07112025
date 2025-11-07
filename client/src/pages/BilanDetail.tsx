@@ -171,7 +171,7 @@ export default function BilanDetail() {
             <Button
               variant="outline"
               className="w-full justify-start"
-              onClick={() => generateAttestationMutation.mutate({ bilanId })}
+              onClick={() => generateAttestationMutation.mutate({ bilanId, totalHours: bilan.durationHours || 24 })}
               disabled={generateAttestationMutation.isPending || bilan?.status !== "COMPLETED"}
             >
               {generateAttestationMutation.isPending ? (

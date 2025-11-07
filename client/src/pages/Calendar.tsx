@@ -68,19 +68,19 @@ export default function Calendar() {
     if (!sessions) return [];
 
     return sessions.map((session) => {
-      const startDate = new Date(session.scheduledDate);
-      const endDate = new Date(startDate.getTime() + (session.duration || 60) * 60000);
+      const startDate = new Date(session.scheduledAt);
+      const endDate = new Date(startDate.getTime() + (session.durationMinutes || 60) * 60000);
 
       return {
         id: session.id,
-        title: `${session.type} - ${session.beneficiaryName || 'Bénéficiaire'}`,
+        title: `${session.title}`,
         start: startDate,
         end: endDate,
         resource: {
           status: session.status,
-          type: session.type,
+          type: session.status,
           bilanId: session.bilanId,
-          beneficiaryName: session.beneficiaryName,
+          beneficiaryId: session.beneficiaryId,
         },
       };
     });

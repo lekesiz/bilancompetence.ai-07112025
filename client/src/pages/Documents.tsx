@@ -11,12 +11,12 @@ import { useRoute } from "wouter";
 import { toast } from "sonner";
 import { useState } from "react";
 
-const DOCUMENT_TYPE_LABELS = {
+const DOCUMENT_TYPE_LABELS: Record<string, string> = {
   CV: "CV",
-  LETTRE_MOTIVATION: "Lettre de motivation",
-  SYNTHESE: "Synthèse",
-  ATTESTATION: "Attestation",
-  AUTRE: "Autre",
+  COVER_LETTER: "Lettre de motivation",
+  SYNTHESIS: "Synthèse",
+  REPORT: "Rapport",
+  OTHER: "Autre",
 };
 
 export default function Documents() {
@@ -25,7 +25,7 @@ export default function Documents() {
   const bilanId = params?.id ? parseInt(params.id) : 0;
 
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [documentType, setDocumentType] = useState<"CV" | "LETTRE_MOTIVATION" | "SYNTHESE" | "ATTESTATION" | "AUTRE">("CV");
+  const [documentType, setDocumentType] = useState<"CV" | "COVER_LETTER" | "SYNTHESIS" | "REPORT" | "OTHER">("CV");
 
   const { data: documents, isLoading, refetch } = trpc.documents.listByBilan.useQuery(
     { bilanId },
@@ -133,10 +133,10 @@ export default function Documents() {
                   onChange={(e) => setDocumentType(e.target.value as any)}
                 >
                   <option value="CV">CV</option>
-                  <option value="LETTRE_MOTIVATION">Lettre de motivation</option>
-                  <option value="SYNTHESE">Synthèse</option>
-                  <option value="ATTESTATION">Attestation</option>
-                  <option value="AUTRE">Autre</option>
+                  <option value="COVER_LETTER">Lettre de motivation</option>
+                  <option value="SYNTHESIS">Synthèse</option>
+                  <option value="REPORT">Rapport</option>
+                  <option value="OTHER">Autre</option>
                 </select>
               </div>
             </div>
@@ -176,10 +176,10 @@ export default function Documents() {
                       <div className="flex items-center gap-4 flex-1">
                         <FileText className="h-8 w-8 text-blue-600" />
                         <div className="flex-1">
-                          <h4 className="font-medium">{doc.name}</h4>
+                          <h4 className="font-medium">{doc.fileName}</h4>
                           <p className="text-sm text-gray-500">
                             Uploadé le{" "}
-                            {new Date(doc.uploadedAt).toLocaleDateString("fr-FR", {
+                            {new Date(doc.createdAt).toLocaleDateString("fr-FR", {
                               day: "2-digit",
                               month: "long",
                               year: "numeric",

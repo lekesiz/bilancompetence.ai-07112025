@@ -41,7 +41,7 @@ export const pdfRouter = router({
         beneficiaryName: beneficiary?.name || "Bénéficiaire",
         consultantName: consultant?.name || "Consultant",
         startDate: bilan.startDate,
-        endDate: bilan.endDate,
+        endDate: bilan.updatedAt, // Using updatedAt as endDate
         status: bilan.status,
         skills: [
           { name: "Communication", level: 4 },
@@ -105,7 +105,7 @@ export const pdfRouter = router({
         beneficiaryName: beneficiary?.name || "Bénéficiaire",
         consultantName: consultant?.name || "Consultant",
         startDate: bilan.startDate,
-        endDate: bilan.endDate,
+        endDate: bilan.updatedAt, // Using updatedAt as endDate
         status: bilan.status,
         totalHours: input.totalHours,
         organizationName: "BilanCompetence.AI",
@@ -154,12 +154,12 @@ export const pdfRouter = router({
       const [consultant] = await db.select().from(users).where(eq(users.id, bilan.consultantId));
 
       const pdfData = {
-        sessionNumber: session.sessionNumber,
+        sessionNumber: session.id, // Using session ID as number
         bilanId: bilan.id,
         beneficiaryName: beneficiary?.name || "Bénéficiaire",
         consultantName: consultant?.name || "Consultant",
-        date: session.scheduledDate,
-        duration: session.duration,
+        date: session.scheduledAt,
+        duration: session.durationMinutes,
         notes: session.notes || "Aucune note disponible",
         nextSteps:
           "Continuer l'évaluation des compétences et préparer la prochaine session de travail.",
@@ -170,7 +170,7 @@ export const pdfRouter = router({
 
       // Upload vers S3
       const randomSuffix = Math.random().toString(36).substring(7);
-      const fileKey = `bilans/${bilan.id}/session-${session.sessionNumber}-${randomSuffix}.pdf`;
+      const fileKey = `bilans/${bilan.id}/session-${session.id}-${randomSuffix}.pdf`;
       const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
 
       return { url };
